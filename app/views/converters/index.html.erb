@@ -1,6 +1,6 @@
 <%= form_tag("/convert", method: "get") do %>
   <%= label_tag(:q, "Convert") %>
-  <%= text_field_tag(:q) %>
+  <%= text_field_tag(:q, params[:q]) %>
   <%= submit_tag("Convert", data: { disable_with: "Please wait..." }) %>
 <% end %>
 
