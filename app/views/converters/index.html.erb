@@ -3,3 +3,7 @@
   <%= text_field_tag(:q) %>
   <%= submit_tag("Convert", data: { disable_with: "Please wait..." }) %>
 <% end %>
+
+<% if @result %>
+  <%= format_conversion_result @result %>
+<% end %>
