@@ -3,8 +3,11 @@ module ConvertersHelper
     if result.is_a?(ArgumentError)
       result
     else
-      if result[:type] == :ce_date
-        'date in common era'
+      case result[:type]
+        when :ce_date
+          'date in common era'
+        when :ce_date_range
+          'date range in common era'
       end
     end
   end
