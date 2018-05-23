@@ -23,13 +23,15 @@ RSpec.feature "Converters", type: :feature do
     end
   end
 
-  # context "parse Minguo dates & semesters" do
-  #   scenario "user enters valid inputs" do
-  #     visit root_path
-  #     visit convert_path
-  #   end
+  context "parse Minguo dates & semesters" do
+    scenario "user enters valid inputs" do
+      fill_and_convert('9 01 9', 'date in Minguo')
+      fill_and_convert('112 12.5 113-7–30', 'date range in Minguo')
+      fill_and_convert('999-2', 'semester in Minguo')
+      fill_and_convert('100-1-100-2', 'semester range in Minguo')
+    end
 
-  #   scenario "user enters invalid inputs" do
-  #   end
-  # end
+    scenario "user enters invalid inputs" do
+    end
+  end
 end
