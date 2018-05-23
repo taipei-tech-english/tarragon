@@ -32,6 +32,11 @@ RSpec.feature "Converters", type: :feature do
     end
 
     scenario "user enters invalid inputs" do
+      fill_and_convert('-0 7 9', 'Input is unrecognizable. Please check your input and try again.')
+      fill_and_convert('101 6 30 101 5 30', 'You’ve entered an invalid date range. Please check your input and try again.')
+      fill_and_convert('0 5 4 1 5 4', 'Minguo wasn’t existent.')
+      fill_and_convert('100-3', 'Input is unrecognizable. Please check your input and try again.')
+      fill_and_convert('98-2 98-1', 'You’ve entered an invalid semester range. Please check your input and try again.')
     end
   end
 end
