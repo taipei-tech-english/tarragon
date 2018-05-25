@@ -21,8 +21,8 @@ RSpec.describe Converter::Parser do
         result_1 = @converter.parse('1920.3.26 1923/7/5')
         result_2 = @converter.parse('1930/7 5-1955 7.5')
 
-        expect(result_1).to eq({type: :ce_date_range})
-        expect(result_2).to eq({type: :ce_date_range})
+        expect(result_1).to eq({type: :ce_date_range, normalized: [ Date.new(1920,3,26), Date.new(1923,7,5) ]})
+        expect(result_2).to eq({type: :ce_date_range, normalized: [ Date.new(1930,7,5), Date.new(1955,7,5) ]})
       end
 
       it "recognizes common era semester" do
@@ -31,18 +31,18 @@ RSpec.describe Converter::Parser do
         result_fcase  = @converter.parse('faLl 1971')
         result_scase  = @converter.parse('sPriNg 1959')
 
-        expect(result_fall).to   eq({type: :ce_semester})
-        expect(result_spring).to eq({type: :ce_semester})
-        expect(result_fcase).to  eq({type: :ce_semester})
-        expect(result_scase).to  eq({type: :ce_semester})
+        expect(result_fall).to   eq({type: :ce_semester, normalized: 'fall 2017'})
+        expect(result_spring).to eq({type: :ce_semester, normalized: 'spring 1988'})
+        expect(result_fcase).to  eq({type: :ce_semester, normalized: 'fall 1971'})
+        expect(result_scase).to  eq({type: :ce_semester, normalized: 'spring 1959'})
       end
 
       it "recognizes common era semester range" do
         result_1 = @converter.parse('Spring 1997 Fall 2000')
         result_2 = @converter.parse('spring 1984–fAll 1986')
 
-        expect(result_1).to eq({type: :ce_semester_range})
-        expect(result_2).to eq({type: :ce_semester_range})
+        expect(result_1).to eq({type: :ce_semester_range, normalized: ['spring 1997', 'fall 2000']})
+        expect(result_2).to eq({type: :ce_semester_range, normalized: ['spring 1984', 'fall 1986']})
       end
     end
 

@@ -28,15 +28,27 @@ module Converter
 
         case
         when regex_ce_semester.match?(processed_input)
-          result = {type: :ce_semester} if legal_ce_semester?(processed_input)
+          result = {type: :ce_semester, normalized: processed_input} if legal_ce_semester?(processed_input)
+
         when regex_ce_date.match?(processed_input)
           normalized_input = normalize_date_format(processed_input)
           date_obj = convert_to_date_object(normalized_input)
           result = {type: :ce_date, normalized: date_obj} if legal_ce_date?(date_obj)
+
         when regex_ce_date_range.match?(processed_input)
-          result = {type: :ce_date_range} if legal_ce_date_range?(processed_input)
+          normalized_input = normalize_date_format(processed_input)
+          split = normalized_input.split('/')
+          date1 = convert_to_date_object("#{split[0]}/#{split[1]}/#{split[2]}")
+          date2 = convert_to_date_object("#{split[3]}/#{split[4]}/#{split[5]}")
+          result = {type: :ce_date_range, normalized: [date1, date2]} if legal_ce_date_range?(date1, date2)
+
         when regex_ce_semester_range.match?(processed_input)
-          result = {type: :ce_semester_range} if legal_ce_semester_range?(processed_input)
+          normalized_input = normalize_date_format(processed_input)
+          sem1, year1, sem2, year2 = normalized_input.split('/')
+          year1 = year1.to_i
+          year2 = year2.to_i
+          result = {type: :ce_semester_range, normalized: ["#{sem1} #{year1}", "#{sem2} #{year2}"]} if legal_ce_semester_range?(sem1, year1, sem2, year2)
+
         when regex_mg_semester.match?(processed_input)
           result = {type: :mg_semester } if legal_mg_semester?(processed_input)
         when regex_mg_date.match?(processed_input)
@@ -63,23 +75,13 @@ module Converter
         true
       end
 
-      def legal_ce_date_range?(input)
-        normalized_input = normalize_date_format(input)
-        split = normalized_input.split('/')
-        date1_obj = convert_to_date_object("#{split[0]}/#{split[1]}/#{split[2]}")
-        date2_obj = convert_to_date_object("#{split[3]}/#{split[4]}/#{split[5]}")
-
-        raise ArgumentError, 'You’ve entered an invalid date range. Please check your input and try again.' if date1_obj > date2_obj
-        raise ArgumentError, 'Minguo wasn’t existent before 1912.' if date1_obj.year < 1912 || date2_obj.year < 1912
+      def legal_ce_date_range?(date1, date2)
+        raise ArgumentError, 'You’ve entered an invalid date range. Please check your input and try again.' if date1 > date2
+        raise ArgumentError, 'Minguo wasn’t existent before 1912.' if date1.year < 1912 || date2.year < 1912
         true
       end
 
-      def legal_ce_semester_range?(input)
-        normalized_input = normalize_date_format(input)
-        sem1, year1, sem2, year2 = input.split('/')
-        year1 = year1.to_i
-        year2 = year2.to_i
-
+      def legal_ce_semester_range?(sem1, year1, sem2, year2)
         if year1 == year2
           raise ArgumentError, 'You’ve entered an invalid semester range. Please check your input and try again.' if sem1 == SEM_FALL && sem2 == SEM_SPRING
         elsif year1 > year2
