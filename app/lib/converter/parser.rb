@@ -1,7 +1,7 @@
 module Converter
   class Parser
     def parse(raw_input)
-      { type: get_type(raw_input) }
+      get_type(raw_input)
     end
 
     private
@@ -28,26 +28,28 @@ module Converter
 
         case
         when regex_ce_semester.match?(processed_input)
-          type = :ce_semester if legal_ce_semester?(processed_input)
+          result = {type: :ce_semester} if legal_ce_semester?(processed_input)
         when regex_ce_date.match?(processed_input)
-          type = :ce_date if legal_ce_date?(processed_input)
+          normalized_input = normalize_date_format(processed_input)
+          date_obj = convert_to_date_object(normalized_input)
+          result = {type: :ce_date, normalized: date_obj} if legal_ce_date?(date_obj)
         when regex_ce_date_range.match?(processed_input)
-          type = :ce_date_range if legal_ce_date_range?(processed_input)
+          result = {type: :ce_date_range} if legal_ce_date_range?(processed_input)
         when regex_ce_semester_range.match?(processed_input)
-          type = :ce_semester_range if legal_ce_semester_range?(processed_input)
+          result = {type: :ce_semester_range} if legal_ce_semester_range?(processed_input)
         when regex_mg_semester.match?(processed_input)
-          type = :mg_semester if legal_mg_semester?(processed_input)
+          result = {type: :mg_semester } if legal_mg_semester?(processed_input)
         when regex_mg_date.match?(processed_input)
-          type = :mg_date if legal_mg_date?(processed_input)
+          result = {type: :mg_date } if legal_mg_date?(processed_input)
         when regex_mg_date_range.match?(processed_input)
-          type = :mg_date_range if legal_mg_date_range?(processed_input)
+          result = {type: :mg_date_range } if legal_mg_date_range?(processed_input)
         when regex_mg_semester_range.match?(processed_input)
-          type = :mg_semester_range if legal_mg_semester_range?(processed_input)
+          result = {type: :mg_semester_range } if legal_mg_semester_range?(processed_input)
         else
           raise ArgumentError, 'Input is unrecognizable. Please check your input and try again.'
         end
 
-        type
+        result
       end
 
       def legal_ce_semester?(input)
@@ -57,9 +59,7 @@ module Converter
       end
 
       def legal_ce_date?(input)
-        normalized_date = normalize_date_format(input)
-        date_obj = convert_to_date_object(normalized_date)
-        raise ArgumentError, 'Minguo wasn’t existent before 1912.' if date_obj.year < 1912
+        raise ArgumentError, 'Minguo wasn’t existent before 1912.' if input.year < 1912
         true
       end
 

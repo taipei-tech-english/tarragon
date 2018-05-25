@@ -12,9 +12,9 @@ RSpec.describe Converter::Parser do
         result_2 = @converter.parse('1940-7/03')
         result_3 = @converter.parse('1958.12-04')
 
-        expect(result_1).to eq({type: :ce_date})
-        expect(result_2).to eq({type: :ce_date})
-        expect(result_3).to eq({type: :ce_date})
+        expect(result_1).to eq({type: :ce_date, normalized: Date.new(1932,5,6)})
+        expect(result_2).to eq({type: :ce_date, normalized: Date.new(1940,7,3)})
+        expect(result_3).to eq({type: :ce_date, normalized: Date.new(1958,12,4)})
       end
 
       it "recognizes common era date range" do
