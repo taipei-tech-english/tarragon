@@ -52,7 +52,10 @@ module Converter
         when regex_mg_semester.match?(processed_input)
           result = {type: :mg_semester } if legal_mg_semester?(processed_input)
         when regex_mg_date.match?(processed_input)
-          result = {type: :mg_date } if legal_mg_date?(processed_input)
+          normalized_date = normalize_date_format(processed_input)
+          date_obj = convert_to_date_object(normalized_date, true)
+          result = {type: :mg_date, normalized: date_obj} if legal_mg_date?(date_obj)
+
         when regex_mg_date_range.match?(processed_input)
           result = {type: :mg_date_range } if legal_mg_date_range?(processed_input)
         when regex_mg_semester_range.match?(processed_input)
@@ -99,10 +102,8 @@ module Converter
         true
       end
 
-      def legal_mg_date?(input)
-        normalized_date = normalize_date_format(input)
-        date_obj = convert_to_date_object(normalized_date)
-        raise ArgumentError, 'Minguo wasn’t existent.' if date_obj.year == 0
+      def legal_mg_date?(date_obj)
+        raise ArgumentError, 'Minguo wasn’t existent.' if date_obj.year == 1911
         true
       end
 
@@ -140,10 +141,14 @@ module Converter
         input.gsub!(/(\/|-|–|\.| )/, '/')
       end
 
-      def convert_to_date_object(input)
+      def convert_to_date_object(input, is_minguo = false)
         begin
           split = input.split('/').map(&:to_i)
-          Date.new(split[0], split[1], split[2])
+          if is_minguo
+            Date.new(split[0]+1911, split[1], split[2])
+          else
+            Date.new(split[0], split[1], split[2])
+          end
         rescue ArgumentError
           raise ArgumentError, 'You’ve entered an invalid date. Please check your input and try again.'
         end

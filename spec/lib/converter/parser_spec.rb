@@ -81,9 +81,9 @@ RSpec.describe Converter::Parser do
         result_2 = @converter.parse('10-2.1')
         result_3 = @converter.parse('107/7/21')
 
-        expect(result_1).to eq({type: :mg_date})
-        expect(result_2).to eq({type: :mg_date})
-        expect(result_3).to eq({type: :mg_date})
+        expect(result_1).to eq({type: :mg_date, normalized: Date.new(9+1911,1,9)})
+        expect(result_2).to eq({type: :mg_date, normalized: Date.new(10+1911,2,1)})
+        expect(result_3).to eq({type: :mg_date, normalized: Date.new(107+1911,7,21)})
       end
 
       it "recognizes Minguo date range" do
