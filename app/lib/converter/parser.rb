@@ -50,7 +50,8 @@ module Converter
           result = {type: :ce_semester_range, normalized: ["#{sem1} #{year1}", "#{sem2} #{year2}"]} if legal_ce_semester_range?(sem1, year1, sem2, year2)
 
         when regex_mg_semester.match?(processed_input)
-          result = {type: :mg_semester } if legal_mg_semester?(processed_input)
+          result = {type: :mg_semester, normalized: processed_input} if legal_mg_semester?(processed_input)
+
         when regex_mg_date.match?(processed_input)
           normalized_date = normalize_date_format(processed_input)
           date_obj = convert_to_date_object(normalized_date, true)
@@ -64,7 +65,14 @@ module Converter
           result = {type: :mg_date_range, normalized: [date1, date2] } if legal_mg_date_range?(date1, date2)
 
         when regex_mg_semester_range.match?(processed_input)
-          result = {type: :mg_semester_range } if legal_mg_semester_range?(processed_input)
+          normalized_input = normalize_date_format(processed_input)
+          year1, sem1, year2, sem2 = normalized_input.split('/')
+          year1 = year1.to_i
+          year2 = year2.to_i
+          sem1 = sem1.to_i
+          sem2 = sem2.to_i
+          result = {type: :mg_semester_range, normalized: ["#{year1}-#{sem1}", "#{year2}-#{sem2}"]} if legal_mg_semester_range?(sem1, year1, sem2, year2)
+
         else
           raise ArgumentError, 'Input is unrecognizable. Please check your input and try again.'
         end
@@ -118,14 +126,7 @@ module Converter
         true
       end
 
-      def legal_mg_semester_range?(input)
-        normalized_input = normalize_date_format(input)
-        year1, sem1, year2, sem2 = input.split('/')
-        year1 = year1.to_i
-        year2 = year2.to_i
-        sem1 = sem1.to_i
-        sem2 = sem2.to_i
-
+      def legal_mg_semester_range?(sem1, year1, sem2, year2)
         if year1 == year2
           raise ArgumentError, 'You’ve entered an invalid semester range. Please check your input and try again.' if sem1 > sem2
         elsif year1 > year2

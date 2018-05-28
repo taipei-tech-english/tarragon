@@ -90,8 +90,10 @@ RSpec.describe Converter::Parser do
         result_1 = @converter.parse('12.3.5-13/6/30')
         result_2 = @converter.parse('112 12.5 113-7–30')
 
-        expect(result_1).to eq({type: :mg_date_range, normalized: [Date.new(12+1911,3,5), Date.new(13+1911,6,30)] })
-        expect(result_2).to eq({type: :mg_date_range, normalized: [Date.new(112+1911,12,5), Date.new(113+1911,7,30)]})
+        expect(result_1).to eq({type: :mg_date_range,
+                                normalized: [Date.new(12+1911,3,5), Date.new(13+1911,6,30)] })
+        expect(result_2).to eq({type: :mg_date_range,
+                                normalized: [Date.new(112+1911,12,5), Date.new(113+1911,7,30)]})
       end
 
       it "recognizes Minguo semester" do
@@ -100,18 +102,18 @@ RSpec.describe Converter::Parser do
         result_3 = @converter.parse('125-1')
         result_4 = @converter.parse('999-2')
 
-        expect(result_1).to eq({type: :mg_semester})
-        expect(result_2).to eq({type: :mg_semester})
-        expect(result_3).to eq({type: :mg_semester})
-        expect(result_4).to eq({type: :mg_semester})
+        expect(result_1).to eq({type: :mg_semester, normalized: '10-1'})
+        expect(result_2).to eq({type: :mg_semester, normalized: '99-2'})
+        expect(result_3).to eq({type: :mg_semester, normalized: '125-1'})
+        expect(result_4).to eq({type: :mg_semester, normalized: '999-2'})
       end
 
       it "recognizes Minguo semester range" do
         result_1 = @converter.parse('88-1 88-2')
         result_2 = @converter.parse('100-1-100-2')
 
-        expect(result_1).to eq({type: :mg_semester_range})
-        expect(result_2).to eq({type: :mg_semester_range})
+        expect(result_1).to eq({type: :mg_semester_range, normalized: ['88-1', '88-2']})
+        expect(result_2).to eq({type: :mg_semester_range, normalized: ['100-1', '100-2']})
       end
     end
 
