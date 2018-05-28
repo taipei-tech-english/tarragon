@@ -57,7 +57,12 @@ module Converter
           result = {type: :mg_date, normalized: date_obj} if legal_mg_date?(date_obj)
 
         when regex_mg_date_range.match?(processed_input)
-          result = {type: :mg_date_range } if legal_mg_date_range?(processed_input)
+          normalized_input = normalize_date_format(processed_input)
+          split = normalized_input.split('/')
+          date1 = convert_to_date_object("#{split[0]}/#{split[1]}/#{split[2]}", true)
+          date2 = convert_to_date_object("#{split[3]}/#{split[4]}/#{split[5]}", true)
+          result = {type: :mg_date_range, normalized: [date1, date2] } if legal_mg_date_range?(date1, date2)
+
         when regex_mg_semester_range.match?(processed_input)
           result = {type: :mg_semester_range } if legal_mg_semester_range?(processed_input)
         else
@@ -107,14 +112,9 @@ module Converter
         true
       end
 
-      def legal_mg_date_range?(input)
-        normalized_input = normalize_date_format(input)
-        split = normalized_input.split('/')
-        date1_obj = convert_to_date_object("#{split[0]}/#{split[1]}/#{split[2]}")
-        date2_obj = convert_to_date_object("#{split[3]}/#{split[4]}/#{split[5]}")
-
-        raise ArgumentError, 'You’ve entered an invalid date range. Please check your input and try again.' if date1_obj > date2_obj
-        raise ArgumentError, 'Minguo wasn’t existent.' if date1_obj.year == 0
+      def legal_mg_date_range?(date1, date2)
+        raise ArgumentError, 'You’ve entered an invalid date range. Please check your input and try again.' if date1 > date2
+        raise ArgumentError, 'Minguo wasn’t existent.' if date1.year == 1911
         true
       end
 

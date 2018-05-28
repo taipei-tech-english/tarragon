@@ -90,8 +90,8 @@ RSpec.describe Converter::Parser do
         result_1 = @converter.parse('12.3.5-13/6/30')
         result_2 = @converter.parse('112 12.5 113-7–30')
 
-        expect(result_1).to eq({type: :mg_date_range})
-        expect(result_2).to eq({type: :mg_date_range})
+        expect(result_1).to eq({type: :mg_date_range, normalized: [Date.new(12+1911,3,5), Date.new(13+1911,6,30)] })
+        expect(result_2).to eq({type: :mg_date_range, normalized: [Date.new(112+1911,12,5), Date.new(113+1911,7,30)]})
       end
 
       it "recognizes Minguo semester" do
