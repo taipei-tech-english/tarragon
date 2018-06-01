@@ -1,30 +1,25 @@
 module Converter
-  class Parser
+  class Parser < ConverterBase
     def parse(raw_input)
       get_type(raw_input)
     end
 
     private
-      DATE_DELIMITERS = '(\/|-|–|\.| )'
-      DATE_RANGE_DELIMITERS = '(-|–| )'
-      SEM_SPRING = 'spring'
-      SEM_FALL = 'fall'
-
       def get_type(raw_input)
-        single_ce_semester  = "(#{SEM_SPRING}|#{SEM_FALL}) " + '\d{4}'
-        single_ce_date      = '\d{4}' + "#{DATE_DELIMITERS}" + '\d{1,2}' + "#{DATE_DELIMITERS}" + '\d{1,2}'
+        single_ce_semester  = "(#{@@SEM_SPRING}|#{@@SEM_FALL}) " + '\d{4}'
+        single_ce_date      = '\d{4}' + "#{@@DATE_DELIMITERS}" + '\d{1,2}' + "#{@@DATE_DELIMITERS}" + '\d{1,2}'
         single_mg_semester  = '\d{1,3}\-[12]'
-        single_mg_date      = '\d{1,3}' + "#{DATE_DELIMITERS}" + '\d{1,2}' + "#{DATE_DELIMITERS}" + '\d{1,2}'
+        single_mg_date      = '\d{1,3}' + "#{@@DATE_DELIMITERS}" + '\d{1,2}' + "#{@@DATE_DELIMITERS}" + '\d{1,2}'
 
         processed_input     = raw_input.strip.downcase
         regex_ce_semester   = /^#{single_ce_semester}$/
         regex_ce_date       = /^#{single_ce_date}$/
-        regex_ce_date_range = /^#{single_ce_date}#{DATE_RANGE_DELIMITERS}#{single_ce_date}$/
-        regex_ce_semester_range = /^#{single_ce_semester}#{DATE_RANGE_DELIMITERS}#{single_ce_semester}$/
+        regex_ce_date_range = /^#{single_ce_date}#{@@DATE_RANGE_DELIMITERS}#{single_ce_date}$/
+        regex_ce_semester_range = /^#{single_ce_semester}#{@@DATE_RANGE_DELIMITERS}#{single_ce_semester}$/
         regex_mg_semester   = /^#{single_mg_semester}$/
         regex_mg_date       = /^#{single_mg_date}$/
-        regex_mg_date_range = /^#{single_mg_date}#{DATE_RANGE_DELIMITERS}#{single_mg_date}$/
-        regex_mg_semester_range = /^#{single_mg_semester}#{DATE_RANGE_DELIMITERS}#{single_mg_semester}$/
+        regex_mg_date_range = /^#{single_mg_date}#{@@DATE_RANGE_DELIMITERS}#{single_mg_date}$/
+        regex_mg_semester_range = /^#{single_mg_semester}#{@@DATE_RANGE_DELIMITERS}#{single_mg_semester}$/
 
         case
         when regex_ce_semester.match?(processed_input)
@@ -99,7 +94,7 @@ module Converter
 
       def legal_ce_semester_range?(sem1, year1, sem2, year2)
         if year1 == year2
-          raise ArgumentError, 'You’ve entered an invalid semester range. Please check your input and try again.' if sem1 == SEM_FALL && sem2 == SEM_SPRING
+          raise ArgumentError, 'You’ve entered an invalid semester range. Please check your input and try again.' if sem1 == @@SEM_FALL && sem2 == @@SEM_SPRING
         elsif year1 > year2
           raise ArgumentError, 'You’ve entered an invalid semester range. Please check your input and try again.'
         else
